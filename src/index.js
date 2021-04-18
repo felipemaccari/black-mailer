@@ -15,17 +15,19 @@ app.post('/mail', upload.single('attachment'), async (request, response) => {
   const { from, to, subject, text, html, senderName } = request.body
 
   let transporter = nodemailer.createTransport({
-    host: 'smtp.gmail.com',
-    port: 465,
-    secure: true,
+    service: 'gmail',
     auth: {
+      type: 'OAuth2',
       user: process.env.MAIL_USERNAME,
-      pass: process.env.MAIL_PASSWORD
+      pass: process.env.MAIL_PASSWORD,
+      clientId: process.env.OAUTH_CLIENTID,
+      clientSecret: process.env.OAUTH_CLIENT_SECRET,
+      refreshToken: process.env.OAUTH_REFRESH_TOKEN
     }
   })
 
   try {
-    let info = await transporter.sendMail({
+    await transporter.sendMail({
       from: `${senderName} <${from}>`,
       to,
       subject,
@@ -38,8 +40,6 @@ app.post('/mail', upload.single('attachment'), async (request, response) => {
         }
       ]
     })
-
-    console.log('Message sent: %s', info.messageId)
 
     return response.status(201).send()
   } catch (error) {
