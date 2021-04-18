@@ -5,6 +5,9 @@
   "repository": "https://github.com/FelipeMaccari/black-mailer.git",
   "author": "Felipe Maccari <felipecesarmaccari@gmail.com>",
   "license": "MIT",
+  "scripts": {
+    "start": "node src/index.js"
+  },
   "dependencies": {
     "cors": "^2.8.5",
     "dotenv": "^8.2.0",
