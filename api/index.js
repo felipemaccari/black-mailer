@@ -36,5 +36,3 @@ app.post('/mail', async (request, response) => {
 })
 
 app.listen(process.env.PORT)
-
-module.exports = app
