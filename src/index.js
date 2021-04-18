@@ -1,11 +1,14 @@
+require('dotenv').config()
+
 const express = require('express')
 const nodemailer = require('nodemailer')
-require('dotenv').config()
 
 const app = express()
 app.use(express.json())
 
-app.post('/mail', async (request, response) => {
+const upload = require('multer')()
+
+app.post('/mail', upload.single('attachment'), async (request, response) => {
   const { from, to, subject, text, html, senderName } = request.body
 
   let transporter = nodemailer.createTransport({
@@ -18,13 +21,21 @@ app.post('/mail', async (request, response) => {
     }
   })
 
+  console.log('upload', request.file)
+
   try {
     let info = await transporter.sendMail({
       from: `${senderName} <${from}>`,
       to,
       subject,
       text,
-      html
+      html,
+      attachments: [
+        {
+          filename: request.file.originalname,
+          content: request.file.buffer
+        }
+      ]
     })
 
     console.log('Message sent: %s', info.messageId)
