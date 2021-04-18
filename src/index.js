@@ -2,9 +2,12 @@ require('dotenv').config()
 
 const express = require('express')
 const nodemailer = require('nodemailer')
+const cors = require('cors')
 
 const app = express()
+
 app.use(express.json())
+app.use(cors())
 
 const upload = require('multer')()
 
@@ -20,8 +23,6 @@ app.post('/mail', upload.single('attachment'), async (request, response) => {
       pass: process.env.MAIL_PASSWORD
     }
   })
-
-  console.log('upload', request.file)
 
   try {
     let info = await transporter.sendMail({
