@@ -26,8 +26,10 @@ app.post('/mail', upload.single('attachment'), async (request, response) => {
     }
   })
 
-  try {
-    await transporter.sendMail({
+  let mailObject = {}
+
+  if (attachments) {
+    mailObject = {
       from: `${senderName} <${from}>`,
       to,
       subject,
@@ -39,7 +41,19 @@ app.post('/mail', upload.single('attachment'), async (request, response) => {
           content: request.file.buffer
         }
       ]
-    })
+    }
+  } else {
+    mailObject = {
+      from: `${senderName} <${from}>`,
+      to,
+      subject,
+      text,
+      html
+    }
+  }
+
+  try {
+    await transporter.sendMail(mailObject)
 
     return response.status(200).send()
   } catch (error) {
