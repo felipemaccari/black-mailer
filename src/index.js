@@ -28,7 +28,7 @@ app.post('/mail', upload.single('attachment'), async (request, response) => {
 
   let mailObject = {}
 
-  if (attachments) {
+  if (request.file) {
     mailObject = {
       from: `${senderName} <${from}>`,
       to,
