@@ -41,7 +41,7 @@ app.post('/mail', upload.single('attachment'), async (request, response) => {
       ]
     })
 
-    return response.status(201).send()
+    return response.status(200).send()
   } catch (error) {
     return response.status(400).send({ error: `message: ${error}` })
   }
