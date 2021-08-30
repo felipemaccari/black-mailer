@@ -11,7 +11,7 @@ app.use(cors())
 
 const upload = require('multer')()
 
-app.post('/mail', upload.single('attachment'), async (request, response) => {
+app.post('/mail', upload.array('attachment'), async (request, response) => {
   const { from, to, subject, text, html, senderName } = request.body
 
   let transporter = nodemailer.createTransport({
@@ -28,19 +28,17 @@ app.post('/mail', upload.single('attachment'), async (request, response) => {
 
   let mailObject = {}
 
-  if (request.file) {
+  if (request.files) {
     mailObject = {
       from: `${senderName} <${from}>`,
       to,
       subject,
       text,
       html,
-      attachments: [
-        {
-          filename: request.file.originalname,
-          content: request.file.buffer
-        }
-      ]
+      attachments: request.files.map(file => ({
+        filename: file.originalname,
+        content: file.buffer
+      })) 
     }
   } else {
     mailObject = {
