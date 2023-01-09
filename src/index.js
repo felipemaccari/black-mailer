@@ -1,32 +1,36 @@
-require('dotenv').config()
+require("dotenv").config();
 
-const express = require('express')
-const nodemailer = require('nodemailer')
-const cors = require('cors')
+const express = require("express");
+const nodemailer = require("nodemailer");
+const cors = require("cors");
 
-const app = express()
+const app = express();
 
-app.use(express.json())
-app.use(cors())
+app.use(express.json());
+app.use(
+  cors({
+    origin: "*",
+  })
+);
 
-const upload = require('multer')()
+const upload = require("multer")();
 
-app.post('/mail', upload.array('attachment'), async (request, response) => {
-  const { from, to, subject, text, html, senderName } = request.body
+app.post("/mail", upload.array("attachment"), async (request, response) => {
+  const { from, to, subject, text, html, senderName } = request.body;
 
   let transporter = nodemailer.createTransport({
-    service: 'gmail',
+    service: "gmail",
     auth: {
-      type: 'OAuth2',
+      type: "OAuth2",
       user: process.env.MAIL_USERNAME,
       pass: process.env.MAIL_PASSWORD,
       clientId: process.env.OAUTH_CLIENTID,
       clientSecret: process.env.OAUTH_CLIENT_SECRET,
-      refreshToken: process.env.OAUTH_REFRESH_TOKEN
-    }
-  })
+      refreshToken: process.env.OAUTH_REFRESH_TOKEN,
+    },
+  });
 
-  let mailObject = {}
+  let mailObject = {};
 
   if (request.files) {
     mailObject = {
@@ -35,30 +39,30 @@ app.post('/mail', upload.array('attachment'), async (request, response) => {
       subject,
       text,
       html,
-      attachments: request.files.map(file => ({
+      attachments: request.files.map((file) => ({
         filename: file.originalname,
-        content: file.buffer
-      })) 
-    }
+        content: file.buffer,
+      })),
+    };
   } else {
     mailObject = {
       from: `${senderName} <${from}>`,
       to,
       subject,
       text,
-      html
-    }
+      html,
+    };
   }
 
   try {
-    await transporter.sendMail(mailObject)
+    await transporter.sendMail(mailObject);
 
-    return response.status(200).send()
+    return response.status(200).send();
   } catch (error) {
-    return response.status(400).send({ error: `message: ${error}` })
+    return response.status(400).send({ error: `message: ${error}` });
   }
-})
+});
 
-app.listen(process.env.PORT)
+app.listen(process.env.PORT);
 
-module.exports = app
+module.exports = app;
